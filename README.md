@@ -50,6 +50,17 @@ flutter:
     - assets/
 ```
 
+
+Para generar un archivo APK en Flutter, puedes utilizar el siguiente comando en la terminal:
+
+```bash
+flutter build apk --release
+```
+
+Este comando compila tu aplicación en modo de lanzamiento y genera el archivo APK en la carpeta `build/app/outputs/flutter-apk`. Asegúrate de estar en el directorio raíz de tu proyecto Flutter cuando ejecutes este comando.
+
+Después de ejecutar este comando, encontrarás el APK generado en la ubicación mencionada, y podrás usarlo para instalar y distribuir tu aplicación en dispositivos Android.
+
 ### Verificación de Datos del Carrito:
 Falta realizar la suma de los artículos en el carrito. Asegúrate de revisar esa parte del código y realizar la suma correctamente.
 
