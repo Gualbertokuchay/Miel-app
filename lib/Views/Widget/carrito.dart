@@ -42,7 +42,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                 _simulatePaymentProcess();
               },
               style: ElevatedButton.styleFrom(
-                primary: Color(0xFFFFF5EB),
+                backgroundColor: Color(0xFFFFF5EB),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(9.0),
@@ -51,7 +51,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
                   style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
               ),
-            ),
+            )
           ],
         ),
       ),
