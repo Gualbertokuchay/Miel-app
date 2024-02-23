@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:miel/main.dart';
+import 'package:miel/Views/Login.dart';
 
 class HomepageAnimate extends StatefulWidget {
   const HomepageAnimate({Key? key}) : super(key: key);
@@ -35,7 +35,7 @@ class _HomepageAnimateState extends State<HomepageAnimate> {
                   EdgeInsets.only(bottom: 20, left: 20, top: 20, right: 20),
               width: double.infinity,
               decoration: BoxDecoration(
-                color:  Colors.white,
+                color: Color(0xFFFFF5EB),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),

@@ -70,6 +70,7 @@ class _HomepageState extends State<Homepage> {
       _selectedIndex = index;
     });
   }
+
 // redirecciones de iconos
   Widget _getBody(int index) {
     switch (index) {

@@ -7,44 +7,48 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class _ShoppingCartPageState extends State<ShoppingCartPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        backgroundColor: Color(0xFFFFF5EB),
+        centerTitle: true,
+        title: Text(
+          "Mi Carrito de Compras",
+          style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+        ),
+      ),
       backgroundColor: Color(0xFFFFF5EB),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(27.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            SizedBox(height: 450),
             Center(
-              child: Text(
-                'Mi Carrito de Compras',
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-              ),
+              child: ShoppingCart.instance.items.isEmpty
+                  ? Text('Tu carrito está vacío.',
+                      style: TextStyle(fontSize: 14.4))
+                  : Column(
+                      children: ShoppingCart.instance.items.map((item) {
+                        return CartItemCard(item: item);
+                      }).toList(),
+                    ),
             ),
-            SizedBox(height: 16),
-            ShoppingCart.instance.items.isEmpty
-                ? Text('Tu carrito está vacío.', style: TextStyle(fontSize: 18))
-                : Column(
-                    children: ShoppingCart.instance.items.map((item) {
-                      return CartItemCard(item: item);
-                    }).toList(),
-                  ),
-            SizedBox(height: 16),
+            SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
-                // Simula el proceso de pago
                 _simulatePaymentProcess();
               },
               style: ElevatedButton.styleFrom(
-                primary: Color(0xFFFFF5EB), // Color principal para Miel
+                primary: Color(0xFFFFF5EB),
               ),
               child: Padding(
-                padding: const EdgeInsets.all(12.0),
+                padding: const EdgeInsets.all(9.0),
                 child: Text(
                   'Pagar',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 20, color: Colors.black),
                 ),
               ),
             ),
@@ -55,12 +59,8 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   }
 
   void _simulatePaymentProcess() {
-    // Simula un proceso de pago que toma 3 segundos
     Future.delayed(Duration(seconds: 3), () {
-      // Muestra la notificación de pago exitoso
       _showSuccessNotification();
-
-      // Agrega aquí la lógica para ir a la pantalla de confirmación o mensaje de éxito
     });
   }
 
@@ -92,14 +92,18 @@ class CartItemCard extends StatelessWidget {
           children: [
             Text(
               item.title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
             ),
             SizedBox(height: 8),
-            Text(item.description, style: TextStyle(fontSize: 14, color: Colors.grey)),
+            Text(item.description,
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
             SizedBox(height: 8),
             Text(
               item.price,
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16),
             ),
           ],
         ),
@@ -143,7 +147,6 @@ class ShoppingCart {
     return total;
   }
 
-  // Utiliza un patrón singleton para acceder a la instancia del carrito desde cualquier lugar
   static final ShoppingCart instance = ShoppingCart._internal();
 
   ShoppingCart._internal();
