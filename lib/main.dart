@@ -8,6 +8,8 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  final String appVersion = "1.2.0";
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
           border: OutlineInputBorder(),
         ),
       ),
-      home: HomepageAnimate(),
+      home: HomepageAnimate(appVersion: appVersion),
     );
   }
 }

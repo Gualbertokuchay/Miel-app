@@ -1,78 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:miel/Views/Widget/carrito.dart';
 
 class MielPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 16.0,
         ),
         itemCount: mielProductsData.length,
-        itemBuilder: (context, index) {
-          final mielProductData = mielProductsData[index];
-          return Hero(
-            tag: 'miel_product_$index',
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  PageRouteBuilder(
-                    pageBuilder: (context, animation, secondaryAnimation) {
-                      return FadeTransition(
-                        opacity: animation,
-                        child: MielProductDetails(
-                          title: mielProductData['title'] ?? '',
-                          description: mielProductData['description'] ?? '',
-                          price: mielProductData['price'] ?? '',
-                          net: mielProductData['net'] ?? '',
-                          imageTag: 'miel_product_$index',
-                        ),
-                      );
-                    },
-                  ),
-                );
-              },
-              child: MielCardImage(
-                title: mielProductData['title'] ?? '',
-                description: mielProductData['description'] ?? '',
-                price: mielProductData['price'] ?? '',
-                net: mielProductData['net'] ?? '',
-                imageUrl: mielProductData['imageUrl'] ?? '',
+        itemBuilder: (context, index) => MielProductCard(index: index),
+      ),
+    );
+  }
+}
+
+class MielProductCard extends StatelessWidget {
+  final int index;
+
+  const MielProductCard({Key? key, required this.index}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final mielProductData = mielProductsData[index];
+    return Hero(
+      tag: 'miel_product_$index',
+      child: GestureDetector(
+        onTap: () => Navigator.push(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, animation, __) => FadeTransition(
+              opacity: animation,
+              child: MielProductDetails(
+                productData: mielProductData,
+                imageTag: 'miel_product_$index',
               ),
             ),
-          );
-        },
+          ),
+        ),
+        child: MielCardImage(productData: mielProductData),
       ),
     );
   }
 }
 
 class MielProductDetails extends StatelessWidget {
-  final String title;
-  final String description;
-  final String price;
-  final String net;
+  final Map<String, String> productData;
   final String imageTag;
 
-  MielProductDetails({
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.net,
+  const MielProductDetails({
+    Key? key,
+    required this.productData,
     required this.imageTag,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Miel Product Details'),
-      ),
+      appBar: AppBar(title: const Text('Miel Product Details')),
       body: Center(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -80,62 +70,13 @@ class MielProductDetails extends StatelessWidget {
             Hero(
               tag: imageTag,
               child: Image.network(
-                'https://via.placeholder.com/150',
+                productData['imageUrl'] ?? 'https://via.placeholder.com/150',
                 fit: BoxFit.cover,
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    description,
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 12),
-                  Text(
-                    price,
-                    style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20),
-                  ),
-                  SizedBox(height: 8),
-                  Text(
-                    net,
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                  ),
-                  SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () {
-                      ShoppingCart.instance.addItem(
-                        CartItem(
-                          title: title,
-                          description: description,
-                          price: price,
-                          net: net,
-                          imageUrl: 'https://via.placeholder.com/150',
-                        ),
-                      );
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ShoppingCartPage(),
-                        ),
-                      );
-                    },
-                    child: Text('Buy Now'),
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.all(16.0),
+              child: ProductDetailsContent(productData: productData),
             ),
           ],
         ),
@@ -144,20 +85,65 @@ class MielProductDetails extends StatelessWidget {
   }
 }
 
-class MielCardImage extends StatelessWidget {
-  final String title;
-  final String description;
-  final String price;
-  final String net;
-  final String imageUrl;
+class ProductDetailsContent extends StatelessWidget {
+  final Map<String, String> productData;
 
-  MielCardImage({
-    required this.title,
-    required this.description,
-    required this.price,
-    required this.net,
-    required this.imageUrl,
-  });
+  const ProductDetailsContent({Key? key, required this.productData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          productData['title'] ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          productData['description'] ?? '',
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 12),
+        Text(
+          productData['price'] ?? '',
+          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          productData['net'] ?? '',
+          style: const TextStyle(color: Colors.grey, fontSize: 16),
+        ),
+        const SizedBox(height: 16),
+        BuyNowButton(title: productData['title'] ?? ''),
+      ],
+    );
+  }
+}
+
+class BuyNowButton extends StatelessWidget {
+  final String title;
+
+  const BuyNowButton({Key? key, required this.title}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () {
+        // Add product to cart logic
+        Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingCartPage()));
+      },
+      child: const Text('Buy Now'),
+    );
+  }
+}
+
+class MielCardImage extends StatelessWidget {
+  final Map<String, String> productData;
+
+  const MielCardImage({Key? key, required this.productData}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -169,53 +155,56 @@ class MielCardImage extends StatelessWidget {
         children: <Widget>[
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(15)),
               child: Image.network(
-                imageUrl,
+                productData['imageUrl'] ?? 'https://via.placeholder.com/150',
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Center(
-                    child: Icon(
-                      Icons.error,
-                      color: Colors.red,
-                    ),
-                  );
-                },
+                errorBuilder: (_, __, ___) => const Center(
+                  child: Icon(Icons.error, color: Colors.red),
+                ),
               ),
             ),
           ),
           Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  description,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  price,
-                  style: TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                ),
-                SizedBox(height: 4),
-                Text(
-                  net,
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
-                ),
-              ],
-            ),
+            padding: const EdgeInsets.all(8.0),
+            child: ProductInfoText(productData: productData),
           ),
         ],
       ),
+    );
+  }
+}
+
+class ProductInfoText extends StatelessWidget {
+  final Map<String, String> productData;
+
+  const ProductInfoText({Key? key, required this.productData}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          productData['title'] ?? '',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          productData['description'] ?? '',
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          productData['price'] ?? '',
+          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 14),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          productData['net'] ?? '',
+          style: const TextStyle(color: Colors.grey, fontSize: 12),
+        ),
+      ],
     );
   }
 }

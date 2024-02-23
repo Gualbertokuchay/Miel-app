@@ -14,6 +14,22 @@ class Homepage extends StatefulWidget {
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
 
+  final List<Widget> _pages = [
+    MielPage(),
+    CerapagaPage(),
+  ];
+
+  final List<BottomNavigationBarItem> _navItems = [
+    BottomNavigationBarItem(
+      icon: Text('assets/miel.svg'),
+      label: 'Miel',
+    ),
+    BottomNavigationBarItem(
+      icon: Text('assets/AbejaCera.svg'),
+      label: 'Cera',
+    ),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +37,7 @@ class _HomepageState extends State<Homepage> {
         automaticallyImplyLeading: false,
         title: Text(
           _getAppBarTitle(),
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 24.0,
             fontWeight: FontWeight.bold,
@@ -31,30 +47,19 @@ class _HomepageState extends State<Homepage> {
         elevation: 0,
         centerTitle: true,
       ),
-      body: _getBody(_selectedIndex),
+      body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        items: [
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/miel.svg',
-              height: 30,
-              width: 30,
-              color: _selectedIndex == 0 ? Colors.black : Colors.grey,
-            ),
-            label: 'Miel',
+        items: _navItems.map((item) => BottomNavigationBarItem(
+          icon: SvgPicture.asset(
+            item.icon as String,
+            height: 30,
+            width: 30,
+            color: _selectedIndex == _navItems.indexOf(item) ? Colors.black : Colors.grey,
           ),
-          BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'assets/AbejaCera.svg',
-              height: 30,
-              width: 30,
-              color: _selectedIndex == 2 ? Colors.black : Colors.grey,
-            ),
-            label: 'Cera',
-          ),
-        ],
+          label: item.label,
+        )).toList(),
         backgroundColor: Colors.transparent,
         selectedItemColor: Colors.black,
         unselectedItemColor: Colors.grey,
@@ -71,43 +76,11 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-// redirecciones de iconos
-  Widget _getBody(int index) {
-    switch (index) {
-      case 0:
-        return MielPage();
-      case 1:
-        return CerapagaPage();
-      default:
-        return Container();
-    }
-  }
+  Widget _getFAB() => FloatingActionButton(
+    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingCartPage())),
+    child: SvgPicture.asset('assets/carrito.svg', height: 36, width: 36, color: Colors.black),
+    backgroundColor: Colors.white,
+  );
 
-  Widget _getFAB() {
-    return FloatingActionButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => ShoppingCartPage()),
-        );
-      },
-      child: SvgPicture.asset(
-        'assets/carrito.svg',
-        height: 36,
-        width: 36,
-        color: Colors.black,
-      ),
-      backgroundColor: Colors.white,
-    );
-  }
-
-  String _getAppBarTitle() {
-    if (_selectedIndex == 0) {
-      return 'Miel App';
-    } else if (_selectedIndex == 1) {
-      return 'Cera App';
-    } else {
-      return 'Carrito de compras';
-    }
-  }
+  String _getAppBarTitle() => _selectedIndex == 0 ? 'Miel App' : 'Cera App';
 }
