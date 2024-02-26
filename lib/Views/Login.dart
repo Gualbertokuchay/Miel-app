@@ -42,14 +42,6 @@ class LoginPage extends StatelessWidget {
               children: [
                 _buildLoginForm(context),
                 // Añade la versión aquí, al final del formulario de inicio de sesión
-                Padding(
-                  padding: const EdgeInsets.only(top: 20), 
-                  child: Text(
-                    'Versión $appVersion', 
-                    // Muestra la versión
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ),
               ],
             ),
           ),

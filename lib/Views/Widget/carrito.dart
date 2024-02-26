@@ -11,7 +11,7 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _buildAppBar(),
-      backgroundColor: const Color(0xFFFFF5EB),
+      backgroundColor: Color(0xFFFFF5EB),
       body: _buildBody(),
     );
   }
@@ -19,31 +19,35 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
   AppBar _buildAppBar() {
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: const Color(0xFFFFF5EB),
+      backgroundColor: Color(0xFFFFF5EB),
       centerTitle: true,
-      title: const Text("Mi Carrito de Compras", style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+      title: Text("Mi Carrito de Compras", style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
     );
   }
 
   Widget _buildBody() {
-    var items = ShoppingCart.instance.items;
     return Padding(
       padding: const EdgeInsets.all(27.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Expanded(
-            child: items.isEmpty
-              ? const Center(child: Text('Tu carrito está vacío.', style: TextStyle(fontSize: 14.4)))
-              : ListView.builder(
-                  itemCount: items.length,
-                  itemBuilder: (context, index) => CartItemCard(item: items[index]),
-                ),
-          ),
-          const SizedBox(height: 12),
+          _buildCartItems(),
+          SizedBox(height: 12),
           _buildPayButton(),
         ],
       ),
+    );
+  }
+
+  Widget _buildCartItems() {
+    var items = ShoppingCart.instance.items;
+    return Expanded(
+      child: items.isEmpty
+          ? Center(child: Text('Tu carrito está vacío.', style: TextStyle(fontSize: 14.4)))
+          : ListView.builder(
+              itemCount: items.length,
+              itemBuilder: (context, index) => CartItemCard(item: items[index]),
+            ),
     );
   }
 
@@ -51,17 +55,17 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     return ElevatedButton(
       onPressed: _simulatePaymentProcess,
       style: ElevatedButton.styleFrom(
-        foregroundColor: Colors.black, backgroundColor: Colors.amber, // Text color
+        backgroundColor: Color(0xFFFFF5EB),
       ),
-      child: const Padding(
-        padding: EdgeInsets.all(9.0),
-        child: Text('Pagar', style: TextStyle(fontSize: 20)),
+      child: Padding(
+        padding: const EdgeInsets.all(9.0),
+        child: Text('Pagar', style: TextStyle(fontSize: 20, color: Colors.black)),
       ),
     );
   }
 
   void _simulatePaymentProcess() {
-    Future.delayed(const Duration(seconds: 3), () {
+    Future.delayed(Duration(seconds: 3), () {
       _showSuccessNotification();
     });
   }
@@ -80,23 +84,23 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
 class CartItemCard extends StatelessWidget {
   final CartItem item;
 
-  const CartItemCard({required this.item});
+  CartItemCard({required this.item});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 5,
-      margin: const EdgeInsets.symmetric(vertical: 8),
+      margin: EdgeInsets.symmetric(vertical: 8),
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(item.title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
-            const SizedBox(height: 8),
+            Text(item.title, style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500)),
+            SizedBox(height: 8),
             Text(item.description, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
-            const SizedBox(height: 8),
-            Text("\$${item.price}", style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+            SizedBox(height: 8),
+            Text("\$${item.price}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
           ],
         ),
       ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:miel/Views/Widget/carrito.dart';
 
 class MielPage extends StatelessWidget {
   @override
@@ -49,7 +47,7 @@ class MielProductCard extends StatelessWidget {
   }
 }
 
-class MielProductDetails extends StatelessWidget {
+class MielProductDetails extends StatefulWidget {
   final Map<String, String> productData;
   final String imageTag;
 
@@ -60,23 +58,129 @@ class MielProductDetails extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _MielProductDetailsState createState() => _MielProductDetailsState();
+}
+
+class _MielProductDetailsState extends State<MielProductDetails> {
+  int quantity = 1;
+  List<Map<String, String>> cartItems = [];
+
+  void incrementQuantity() {
+    setState(() {
+      quantity++;
+    });
+  }
+
+  void decrementQuantity() {
+    if (quantity > 1) {
+      setState(() {
+        quantity--;
+      });
+    }
+  }
+
+  void addToCart() {
+    setState(() {
+      cartItems.add(widget.productData);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Miel Product Details')),
-      body: Center(
+      appBar: AppBar(
+        title: Text(widget.productData['title'] ?? ''),
+        actions: <Widget>[
+          IconButton(
+            icon: Stack(
+              children: [
+                Icon(Icons.shopping_cart),
+                if (cartItems.isNotEmpty)
+                  Positioned(
+                    right: 0,
+                    child: CircleAvatar(
+                      radius: 8,
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      child: Text(
+                        cartItems.length.toString(),
+                        style: TextStyle(fontSize: 12),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return ListView.builder(
+                    itemCount: cartItems.length,
+                    itemBuilder: (context, index) {
+                      return ListTile(
+                        title: Text(cartItems[index]['title'] ?? ''),
+                        trailing: Text(cartItems[index]['price'] ?? ''),
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Hero(
-              tag: imageTag,
-              child: Image.network(
-                productData['imageUrl'] ?? 'https://via.placeholder.com/150',
-                fit: BoxFit.cover,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            SizedBox(
+              height: 300,
+              child: Hero(
+                tag: widget.imageTag,
+                child: Image.network(
+                  widget.productData['imageUrl'] ?? 'https://via.placeholder.com/150',
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
-              child: ProductDetailsContent(productData: productData),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    widget.productData['title'] ?? '',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    widget.productData['description'] ?? '',
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                  ),
+                  SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.remove),
+                        onPressed: decrementQuantity,
+                      ),
+                      Text('$quantity'),
+                      IconButton(
+                        icon: Icon(Icons.add),
+                        onPressed: incrementQuantity,
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 16),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: addToCart,
+                      child: Text('Add to Cart'),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
@@ -85,60 +189,7 @@ class MielProductDetails extends StatelessWidget {
   }
 }
 
-class ProductDetailsContent extends StatelessWidget {
-  final Map<String, String> productData;
 
-  const ProductDetailsContent({Key? key, required this.productData}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          productData['title'] ?? '',
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          productData['description'] ?? '',
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 12),
-        Text(
-          productData['price'] ?? '',
-          style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold, fontSize: 20),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          productData['net'] ?? '',
-          style: const TextStyle(color: Colors.grey, fontSize: 16),
-        ),
-        const SizedBox(height: 16),
-        BuyNowButton(title: productData['title'] ?? ''),
-      ],
-    );
-  }
-}
-
-class BuyNowButton extends StatelessWidget {
-  final String title;
-
-  const BuyNowButton({Key? key, required this.title}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: () {
-        // Add product to cart logic
-        Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingCartPage()));
-      },
-      child: const Text('Buy Now'),
-    );
-  }
-}
 
 class MielCardImage extends StatelessWidget {
   final Map<String, String> productData;
@@ -150,6 +201,7 @@ class MielCardImage extends StatelessWidget {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       elevation: 5,
+      
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
@@ -231,67 +283,7 @@ final List<Map<String, String>> mielProductsData = [
     'net': 'Net: 750g',
     'imageUrl': 'https://via.placeholder.com/150',
   },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 0',
-    'description': 'Description of Miel Product 0',
-    'price': '\$10',
-    'net': 'Net: 500g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 1',
-    'description': 'Description of Miel Product 1',
-    'price': '\$20',
-    'net': 'Net: 1kg',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
-  {
-    'title': 'Miel Product 2',
-    'description': 'Description of Miel Product 2',
-    'price': '\$30',
-    'net': 'Net: 750g',
-    'imageUrl': 'https://via.placeholder.com/150',
-  },
+  // Agrega más productos aquí si es necesario
 ];
+
+

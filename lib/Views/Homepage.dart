@@ -16,16 +16,16 @@ class _HomepageState extends State<Homepage> {
 
   final List<Widget> _pages = [
     MielPage(),
-    CerapagaPage(),
+    Cerapage()
   ];
 
   final List<BottomNavigationBarItem> _navItems = [
     BottomNavigationBarItem(
-      icon: Text('assets/miel.svg'),
+      icon: SvgPicture.asset('assets/miel.svg', height: 30, width: 30),
       label: 'Miel',
     ),
     BottomNavigationBarItem(
-      icon: Text('assets/AbejaCera.svg'),
+      icon: SvgPicture.asset('assets/AbejaCera.svg', height: 30, width: 30),
       label: 'Cera',
     ),
   ];
@@ -52,12 +52,7 @@ class _HomepageState extends State<Homepage> {
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         items: _navItems.map((item) => BottomNavigationBarItem(
-          icon: SvgPicture.asset(
-            item.icon as String,
-            height: 30,
-            width: 30,
-            color: _selectedIndex == _navItems.indexOf(item) ? Colors.black : Colors.grey,
-          ),
+          icon: item.icon,
           label: item.label,
         )).toList(),
         backgroundColor: Colors.transparent,
