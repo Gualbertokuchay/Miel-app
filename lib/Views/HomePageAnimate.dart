@@ -12,7 +12,6 @@ class HomepageAnimate extends StatefulWidget {
   State<HomepageAnimate> createState() => _HomepageAnimateState();
 }
 
-
 class _HomepageAnimateState extends State<HomepageAnimate> {
   @override
   Widget build(BuildContext context) {
@@ -22,52 +21,24 @@ class _HomepageAnimateState extends State<HomepageAnimate> {
         child: Stack(
           children: <Widget>[
             Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                _buildTopSpacer(),
-                _buildAnimatedLogo(),
-                _buildAnimatedBottomSection(context),
+                _buildBottomContent(context),
               ],
             ),
-            _buildVersionText(), // Llama aquí al widget que muestra la versión
+            Center(
+              child: _buildAnimatedLogo(),
+            ),
+            _buildVersionText(),
           ],
         ),
       ),
     );
   }
 
-   Widget _buildVersionText() {
-    return Positioned(
-      left: 16,
-      bottom: 16,
-      child: Text(
-        'Versión ${widget.appVersion}', // Usa la propiedad appVersion aquí
-        style: TextStyle(
-          fontSize: 12,
-          color: Colors.grey,
-        ),
-      ),
-    );
-  }
-}
-
-  Widget _buildTopSpacer() => SizedBox(height: 50);
-
-  Widget _buildAnimatedLogo() {
-    return FadeIn(
-      duration: Duration(milliseconds: 1500),
-      child: SvgPicture.asset(
-        'assets/abejaMovimiento.svg',
-        width: 250,
-        height: 250,
-      ),
-    );
-  }
-
-  Widget _buildAnimatedBottomSection(BuildContext context) {
-    return FadeInUp(
+  Widget _buildBottomContent(BuildContext context) {
+    return FadeInUpBig(
       duration: Duration(milliseconds: 1000),
-      delay: Duration(milliseconds: 500),
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
         width: double.infinity,
@@ -90,6 +61,17 @@ class _HomepageAnimateState extends State<HomepageAnimate> {
         SizedBox(height: 20),
         _buildExploreNowButton(context),
       ],
+    );
+  }
+
+  Widget _buildAnimatedLogo() {
+    return ElasticInDown(
+      duration: Duration(milliseconds: 1500),
+      child: SvgPicture.asset(
+        'assets/abejaMovimiento.svg',
+        width: 250,
+        height: 250,
+      ),
     );
   }
 
@@ -117,3 +99,20 @@ class _HomepageAnimateState extends State<HomepageAnimate> {
     );
   }
 
+  Widget _buildVersionText() {
+    return Positioned(
+      left: 16,
+      bottom: 16,
+      child: FadeIn(
+        duration: Duration(milliseconds: 2000),
+        child: Text(
+          'Versión ${widget.appVersion}', // Usa la propiedad appVersion aquí
+          style: TextStyle(
+            fontSize: 12,
+            color: Colors.grey,
+          ),
+        ),
+      ),
+    );
+  }
+}

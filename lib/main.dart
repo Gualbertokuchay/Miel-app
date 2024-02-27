@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:miel/Views/HomePageAnimate.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   final String appVersion = "1.2.0";
 
@@ -23,4 +26,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-

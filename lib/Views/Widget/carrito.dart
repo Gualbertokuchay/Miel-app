@@ -32,7 +32,9 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           _buildCartItems(),
-          SizedBox(height: 12),
+          SizedBox(height: 20),
+          _buildTotalPrice(),
+          SizedBox(height: 20),
           _buildPayButton(),
         ],
       ),
@@ -51,16 +53,22 @@ class _ShoppingCartPageState extends State<ShoppingCartPage> {
     );
   }
 
+  Widget _buildTotalPrice() {
+    return Text(
+      'Total: \$${ShoppingCart.instance.calculateTotal().toStringAsFixed(2)}',
+      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+      textAlign: TextAlign.center,
+    );
+  }
+
   Widget _buildPayButton() {
     return ElevatedButton(
       onPressed: _simulatePaymentProcess,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFFFF5EB),
+        backgroundColor: Colors.black,
+        padding: EdgeInsets.symmetric(vertical: 15),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(9.0),
-        child: Text('Pagar', style: TextStyle(fontSize: 20, color: Colors.black)),
-      ),
+      child: Text('Pagar', style: TextStyle(fontSize: 20)),
     );
   }
 
@@ -100,7 +108,16 @@ class CartItemCard extends StatelessWidget {
             SizedBox(height: 8),
             Text(item.description, style: TextStyle(fontSize: 14, color: Colors.grey.shade700)),
             SizedBox(height: 8),
-            Text("\$${item.price}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text("\$${item.price}", style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+                IconButton(
+                  onPressed: () => ShoppingCart.instance.removeItem(item),
+                  icon: Icon(Icons.delete, color: Colors.red),
+                ),
+              ],
+            ),
           ],
         ),
       ),

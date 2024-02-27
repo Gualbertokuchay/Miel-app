@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "768588544194",
+    "project_id": "db-mielapp",
+    "storage_bucket": "db-mielapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:768588544194:android:6bc0e466315c6db634a35b",
+        "android_client_info": {
+          "package_name": "com.example.miel"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmBIePiR62SPkoyv10oHfUzuHtb2M8VcE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:miel/Views/Widget/Miel.dart';
-import 'package:miel/Views/Widget/carrito.dart';
 import 'package:miel/Views/Widget/cera.dart';
 
 class Homepage extends StatefulWidget {
@@ -13,55 +13,61 @@ class Homepage extends StatefulWidget {
 
 class _HomepageState extends State<Homepage> {
   int _selectedIndex = 0;
+  final List<Map<String, String>> _mielProductsData = [
+    {
+      'title': 'Miel Product 0',
+      'description': 'Description of Miel Product 0',
+      'price': '\$10',
+      'net': 'Net: 500g',
+      'imageUrl': 'https://via.placeholder.com/150',
+    },
+    // Más productos...
+  ];
 
   final List<Widget> _pages = [
     MielPage(),
     Cerapage()
+    // No olvides añadir el widget del carrito de compras si es necesario
   ];
 
-  final List<BottomNavigationBarItem> _navItems = [
-    BottomNavigationBarItem(
-      icon: SvgPicture.asset('assets/miel.svg', height: 30, width: 30),
-      label: 'Miel',
-    ),
-    BottomNavigationBarItem(
-      icon: SvgPicture.asset('assets/AbejaCera.svg', height: 30, width: 30),
-      label: 'Cera',
-    ),
-  ];
+  void _showCart() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => CartPage(mielProductsData: _mielProductsData),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(
-          _getAppBarTitle(),
-          style: const TextStyle(
-            color: Colors.black,
-            fontSize: 24.0,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-      ),
       body: _pages.elementAt(_selectedIndex),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        items: _navItems.map((item) => BottomNavigationBarItem(
-          icon: item.icon,
-          label: item.label,
-        )).toList(),
-        backgroundColor: Colors.transparent,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        elevation: 0,
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showCart,
+        child: Icon(Icons.shopping_cart),
+        backgroundColor: Colors.white,
       ),
-      floatingActionButton: _getFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        notchMargin: 6.0,
+        color: Colors.white,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildAnimatedIcon(
+              'assets/miel.svg',
+              isSelected: _selectedIndex == 0,
+              onTap: () => _onItemTapped(0),
+            ),
+            SizedBox(width: 48), // El espacio para el FloatingActionButton
+            _buildAnimatedIcon(
+              'assets/AbejaCera.svg',
+              isSelected: _selectedIndex == 1,
+              onTap: () => _onItemTapped(1),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -71,11 +77,66 @@ class _HomepageState extends State<Homepage> {
     });
   }
 
-  Widget _getFAB() => FloatingActionButton(
-    onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ShoppingCartPage())),
-    child: SvgPicture.asset('assets/carrito.svg', height: 36, width: 36, color: Colors.black),
-    backgroundColor: Colors.white,
-  );
+  Widget _buildAnimatedIcon(String asset, {required bool isSelected, required VoidCallback onTap}) {
+    return IconButton(
+      icon: SvgPicture.asset(
+        asset,
+        height: 30,
+        width: 30,
+        color: isSelected ? Colors.black : Colors.grey,
+      ),
+      onPressed: onTap,
+    );
+  }
+}
 
-  String _getAppBarTitle() => _selectedIndex == 0 ? 'Miel App' : 'Cera App';
+class CartPage extends StatefulWidget {
+  final List<Map<String, String>> mielProductsData;
+
+  const CartPage({Key? key, required this.mielProductsData}) : super(key: key);
+
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Column(
+        children: [
+          Expanded(
+            child: ListView.builder(
+              itemCount: widget.mielProductsData.length,
+              itemBuilder: (BuildContext context, int index) {
+                return Card(
+                  child: ListTile(
+                    leading: CachedNetworkImage(
+                      imageUrl: widget.mielProductsData[index]['imageUrl']!,
+                      placeholder: (context, url) => CircularProgressIndicator(),
+                      errorWidget: (context, url, error) => Icon(Icons.error),
+                    ),
+                    title: Text(widget.mielProductsData[index]['title']!),
+                    subtitle: Text(widget.mielProductsData[index]['description']!),
+                    trailing: Text(widget.mielProductsData[index]['price']!),
+                  ),
+                );
+              },
+            ),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              // Aquí la lógica para finalizar la compra
+              setState(() {
+                widget.mielProductsData.clear();
+              });
+              Navigator.pop(context); // Cerrar el modal del carrito
+            },
+            child: Text('Finalizar Compra'),
+          ),
+        ],
+      ),
+    );
+  }
 }
